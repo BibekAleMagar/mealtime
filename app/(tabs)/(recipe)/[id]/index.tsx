@@ -140,7 +140,6 @@ export default function RecipeDetail() {
             </View>
           ))}
 
-          {/* Instructions List */}
           <Text className="text-xl font-bold text-gray-800 mt-8 mb-4">
             Instructions
           </Text>

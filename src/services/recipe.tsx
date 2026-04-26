@@ -2,9 +2,17 @@ import apiClient from "../api/apiClient";
 import { Recipe } from "../types/recipe";
 import { RecipeResponse } from "../types/paginatedResponse";
 
-export const getRecipes = async () => {
+export const getRecipes = async ({
+  limit = 10,
+  skip = 0,
+}: {
+  limit?: number;
+  skip?: number;
+}) => {
   try {
-    const response = await apiClient.get<RecipeResponse>("/recipes");
+    const response = await apiClient.get<RecipeResponse>("/recipes", {
+      params: { limit, skip },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching recipes:", error);

@@ -8,11 +8,14 @@ import {
   TextInput,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { getRecipes, searchRecipes } from "@/src/services/recipe";
 import { Recipe } from "@/src/types/recipe";
 import { useRouter } from "expo-router";
+import { Pagination } from "@/src/components/pagination";
+
+const LIMIT = 10;
 
 const RecipeSkeleton = () => (
   <View className="mb-6 px-4">
@@ -25,40 +28,51 @@ const RecipeSkeleton = () => (
 export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [skip, setSkip] = useState(0);
+  const [total, setTotal] = useState(0);
   const [query, setQuery] = useState<string>("");
+
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  const fetchInitialRecipes = async () => {
+  const fetchRecipes = async (
+    currentSkip: number,
+    searchQuery: string = "",
+  ) => {
     setIsLoading(true);
     try {
-      const data = await getRecipes();
+      let data;
+      if (searchQuery.trim() !== "") {
+        data = await searchRecipes(searchQuery);
+        // Note: dummyjson search endpoint might not support limit/skip same way
+        // If it doesn't, we just show the search results
+      } else {
+        data = await getRecipes({ limit: LIMIT, skip: currentSkip });
+      }
+
       setRecipes(data.recipes || []);
+      setTotal(data.total || 0);
     } catch (error) {
       console.error(error);
+      setRecipes([]);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchInitialRecipes();
-  }, []);
+    fetchRecipes(skip, query);
+  }, [skip]);
 
-  const handleSearch = async () => {
-    if (query.trim() === "") {
-      fetchInitialRecipes();
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const data = await searchRecipes(query);
-      setRecipes(data.recipes || []);
-    } catch (error) {
-      setRecipes([]);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSearch = () => {
+    setSkip(0); // Reset to first page on new search
+    fetchRecipes(0, query);
+  };
+
+  const resetSearch = () => {
+    setQuery("");
+    setSkip(0);
+    fetchRecipes(0, "");
   };
 
   const renderEmptyState = () => (
@@ -70,13 +84,10 @@ export default function Index() {
         No Recipes Found
       </Text>
       <Text className="text-gray-400 text-center mt-2 leading-5">
-        We couldn't find any recipes matching "{query}".
+        We couldn't find anything matching "{query}".
       </Text>
       <TouchableOpacity
-        onPress={() => {
-          setQuery("");
-          fetchInitialRecipes();
-        }}
+        onPress={resetSearch}
         className="mt-6 bg-primary px-8 py-3 rounded-xl"
       >
         <Text className="text-white font-bold">Show All Recipes</Text>
@@ -108,12 +119,7 @@ export default function Index() {
             onSubmitEditing={handleSearch}
           />
           {query.length > 0 && (
-            <TouchableOpacity
-              onPress={() => {
-                setQuery("");
-                fetchInitialRecipes();
-              }}
-            >
+            <TouchableOpacity onPress={resetSearch}>
               <Ionicons name="close-circle" size={20} color="#9CA3AF" />
             </TouchableOpacity>
           )}
@@ -153,12 +159,21 @@ export default function Index() {
         <FlatList
           data={recipes}
           keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
+          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 30 }}
           showsVerticalScrollIndicator={false}
+          ListFooterComponent={
+            <Pagination
+              total={total}
+              skip={skip}
+              limit={LIMIT}
+              loading={isLoading}
+              onPageChange={setSkip}
+            />
+          }
           renderItem={({ item }) => (
             <TouchableOpacity
               activeOpacity={0.9}
-              className="bg-white rounded-3xl mb-6 shadow-sm border border-gray-100 overflow-hidden"
+              className="bg-white rounded-3xl mb-2 shadow-sm border border-gray-100 overflow-hidden"
               onPress={() => router.push(`/(recipe)/${item.id}`)}
             >
               <View className="relative">
