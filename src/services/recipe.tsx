@@ -23,3 +23,13 @@ export const searchRecipes = async (query: string) => {
     throw error;
   }
 };
+
+export const getRecipeById = async (id: string) => {
+  try {
+    const response = await apiClient.get<Recipe>(`/recipes/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching recipe with id ${id}:`, error);
+    throw error;
+  }
+};

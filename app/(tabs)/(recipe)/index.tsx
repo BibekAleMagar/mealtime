@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { getRecipes, searchRecipes } from "@/src/services/recipe";
 import { Recipe } from "@/src/types/recipe";
+import { useRouter } from "expo-router";
 
 const RecipeSkeleton = () => (
   <View className="mb-6 px-4">
@@ -25,6 +26,7 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [query, setQuery] = useState<string>("");
+  const router = useRouter();
   const insets = useSafeAreaInsets();
 
   const fetchInitialRecipes = async () => {
@@ -157,6 +159,7 @@ export default function Index() {
             <TouchableOpacity
               activeOpacity={0.9}
               className="bg-white rounded-3xl mb-6 shadow-sm border border-gray-100 overflow-hidden"
+              onPress={() => router.push(`/(recipe)/${item.id}`)}
             >
               <View className="relative">
                 <Image
