@@ -36,10 +36,10 @@ export default function Onboarding() {
     try {
       await AsyncStorage.setItem("@hasSeenOnboarding", "true");
       // Route to your tab group
-      router.replace("/(tabs)");
+      router.replace("/(tabs)/(recipe)");
     } catch (e) {
       console.log("Error saving onboarding status", e);
-      router.replace("/(tabs)");
+      router.replace("/(tabs)/(recipe)"); // Fallback route
     }
   };
 

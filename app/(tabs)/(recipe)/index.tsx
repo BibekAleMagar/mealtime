@@ -31,7 +31,6 @@ export default function Index() {
       setIsLoading(true);
       try {
         const data = await getRecipes();
-        // Since your data structure has a .recipes property
         setRecipes(data.recipes || []);
       } catch (error) {
         console.error("Error fetching recipes:", error);
@@ -44,7 +43,6 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
-      {/* 1. Header & Search Area */}
       <View className="px-6 py-4">
         <View className="flex-row justify-between items-center">
           <View>
@@ -57,7 +55,6 @@ export default function Index() {
           </View>
         </View>
 
-        {/* Professional Search Bar */}
         <View className="flex-row items-center bg-gray-50 mt-6 px-4 py-3 rounded-2xl border border-gray-100">
           <Ionicons name="search-outline" size={20} color="#9CA3AF" />
           <TextInput
@@ -68,7 +65,6 @@ export default function Index() {
         </View>
       </View>
 
-      {/* 2. Horizontal Categories (Static for UI) */}
       <View className="mb-4">
         <ScrollView
           horizontal
@@ -90,7 +86,6 @@ export default function Index() {
         </ScrollView>
       </View>
 
-      {/* 3. Recipe List */}
       {isLoading ? (
         <ScrollView showsVerticalScrollIndicator={false}>
           {[1, 2, 3].map((i) => (
@@ -108,14 +103,12 @@ export default function Index() {
               activeOpacity={0.9}
               className="bg-white rounded-3xl mb-6 shadow-sm border border-gray-100 overflow-hidden"
             >
-              {/* Image & Badges */}
               <View className="relative">
                 <Image
                   source={{ uri: item.image }}
                   className="w-full h-56 bg-gray-100"
                 />
 
-                {/* Custom Rating Badge using your 'rating' color */}
                 <View className="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-full flex-row items-center">
                   <Ionicons name="star" size={14} color="#fead30" />
                   <Text className="ml-1 font-bold text-xs text-gray-800">
@@ -131,7 +124,6 @@ export default function Index() {
                 </View>
               </View>
 
-              {/* Content mapped to your JSON fields */}
               <View className="p-5">
                 <View className="flex-row justify-between items-start">
                   <View className="flex-1">
@@ -154,7 +146,6 @@ export default function Index() {
                   </TouchableOpacity>
                 </View>
 
-                {/* Meta Stats Section */}
                 <View className="flex-row mt-4 pt-4 border-t border-gray-50 items-center justify-between">
                   <View className="flex-row items-center">
                     <Ionicons name="time-outline" size={18} color="#9CA3AF" />

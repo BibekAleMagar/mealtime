@@ -23,11 +23,11 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="(recipe)/index"
         options={{
           title: "Recipes",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="restaurant-outline" size={24} color={color} />
+            <Ionicons name="restaurant" size={24} color={color} />
           ),
         }}
       />
