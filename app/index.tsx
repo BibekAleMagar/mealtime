@@ -6,6 +6,7 @@ export default function Index() {
   const [isFirstLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
 
   useEffect(() => {
+    AsyncStorage.removeItem("@hasSeenOnboarding"); // For testing purposes, remove this line in production
     AsyncStorage.getItem("@hasSeenOnboarding").then((value) => {
       setIsFirstLaunch(value === null);
     });
