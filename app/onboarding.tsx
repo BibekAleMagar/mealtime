@@ -63,7 +63,7 @@ export default function Onboarding() {
           </TouchableOpacity>
         </View>
 
-        {/* <PagerView
+        <PagerView
           ref={pagerRef}
           style={{ flex: 1 }}
           initialPage={0}
@@ -90,7 +90,7 @@ export default function Onboarding() {
               </View>
             </View>
           ))}
-        </PagerView> */}
+        </PagerView>
 
         <View className="px-10 py-8">
           <View className="flex-row justify-center mb-10 gap-x-2">

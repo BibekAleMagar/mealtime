@@ -126,7 +126,7 @@ export default function Index() {
         </View>
       </View>
 
-      <View className="mb-4">
+      {/* <View className="mb-4">
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -145,7 +145,7 @@ export default function Index() {
             </TouchableOpacity>
           ))}
         </ScrollView>
-      </View>
+      </View> */}
 
       {isLoading ? (
         <ScrollView showsVerticalScrollIndicator={false}>

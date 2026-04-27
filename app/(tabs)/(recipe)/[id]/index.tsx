@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getRecipeById } from "@/src/services/recipe";
 import { Recipe } from "@/src/types/recipe";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function RecipeDetail() {
   const { id } = useLocalSearchParams();
@@ -20,13 +21,13 @@ export default function RecipeDetail() {
 
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     const fetchDetail = async () => {
       if (!id) return;
       try {
         setLoading(true);
-        // Ensure id is passed as a string
         const data = await getRecipeById(Array.isArray(id) ? id[0] : id);
         setRecipe(data);
       } catch (e) {
@@ -37,6 +38,47 @@ export default function RecipeDetail() {
     };
     fetchDetail();
   }, [id]);
+
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      try {
+        const savedFavorites = await AsyncStorage.getItem("favorites");
+        if (savedFavorites) {
+          const favorites: Recipe[] = JSON.parse(savedFavorites);
+          const exists = favorites.some((fav) => String(fav.id) === String(id));
+          setIsFavorite(exists);
+        }
+      } catch (e) {
+        console.error("Error checking favorites", e);
+      }
+    };
+    checkFavoriteStatus();
+  }, [id]);
+
+  const toggleFavorite = async () => {
+    if (!recipe) return;
+
+    try {
+      const savedFavorites = await AsyncStorage.getItem("favorites");
+      let favorites: Recipe[] = savedFavorites
+        ? JSON.parse(savedFavorites)
+        : [];
+
+      if (isFavorite) {
+        // Remove from favorites
+        favorites = favorites.filter((fav) => String(fav.id) !== String(id));
+        setIsFavorite(false);
+      } else {
+        // Add to favorites
+        favorites.push(recipe);
+        setIsFavorite(true);
+      }
+
+      await AsyncStorage.setItem("favorites", JSON.stringify(favorites));
+    } catch (e) {
+      console.error("Failed to save favorite:", e);
+    }
+  };
 
   if (loading) {
     return (
@@ -82,8 +124,15 @@ export default function RecipeDetail() {
             >
               <Ionicons name="chevron-back" size={24} color="#1F2937" />
             </TouchableOpacity>
-            <TouchableOpacity className="bg-white/90 p-2 rounded-full shadow-sm">
-              <Ionicons name="heart-outline" size={24} color="#129575" />
+            <TouchableOpacity
+              className="bg-white/90 p-2 rounded-full shadow-sm"
+              onPress={toggleFavorite}
+            >
+              <Ionicons
+                name={isFavorite ? "heart" : "heart-outline"}
+                size={24}
+                color={isFavorite ? "#E11D48" : "#129575"}
+              />
             </TouchableOpacity>
           </View>
         </View>
